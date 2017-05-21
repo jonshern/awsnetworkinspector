@@ -1,3 +1,8 @@
+from __future__ import print_function
+import sys
+sys.path.append('domain/')
+
+
 import json
 import os
 import csv
@@ -5,6 +10,10 @@ import sys
 import argparse
 import boto3
 from jinja2 import Environment, FileSystemLoader, Template
+
+
+from elasticip import ElasticIp
+from vpc import Vpc
 
 
 class Account:
@@ -23,61 +32,8 @@ class VpnGateway:
     def __init__(self, **entries):
         self.__dict__.update(entries)  
 
-class Vpc:
-    id = ''
-    cidr_block = ''
-    dhcp_options_id = ''
-    instance_tenancy = ''
-    ipv6_cidr_block_association_set = ''
-    is_default = ''
-    state = ''
-    tags = ''
-    vpc_id = ''
-
-    item = ''
-    subnets = []
-    securitygroups = []
-    
-
-    def __init__(self, item):
-        self.item = item
-
-    def printvpc(self):
-        print (self.item)
 
 
-class ElasticIp:
-    NetworkInterfaceId = ''
-    AssociationId = ''
-    NetworkInterfaceOwnerId = ''
-    PublicIp = ''
-    AllocationId = ''
-    PrivateIpAddress = ''
-
-    def __init__(self, item):
-        if 'NetworkInterfaceId' in item:
-            self.NetworkInterfaceId = item['NetworkInterfaceId']
-
-        if 'AssociationId' in item:
-            self.AssociationId = item['AssociationId']
-
-        if 'NetworkInterfaceOwnerId' in item:
-            self.NetworkInterfaceOwnerId = item['NetworkInterfaceOwnerId']
-
-        if 'PublicIp' in item:
-            self.PublicIp = item['PublicIp']
-
-        if 'AllocationId' in item:
-            self.AllocationId = item['AllocationId']
-
-        if 'PrivateIpAddress' in item:
-            self.PrivateIpAddress = item['PrivateIpAddress']
-
-
-    def printeip(self):
-        print ('----------------------------------')
-        print ('Public IP ' + self.PublicIp)
-        print ('Private IP ' + self.PrivateIpAddress)
 
 
 class Subnet:
@@ -117,7 +73,7 @@ def main():
     profilename = args['profile']
 
     if args['inspect']:
-        print 'Starting the inspection of the network'
+        print('Starting the inspection of the network')
 
     if args['vpc']:
         vpclist = getvpclist(profilename)
