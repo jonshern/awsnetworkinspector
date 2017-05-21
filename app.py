@@ -53,6 +53,7 @@ def main():
 
     parser.add_argument(
         '-i', '--inspect', help='Initiate the inspection of the aws network', action='store_true')
+
     parser.add_argument(
         '-v', '--vpc', help='Get a list of the vpcs', action='store_true')
     parser.add_argument(
@@ -77,7 +78,7 @@ def main():
     if args['vpc']:
         vpclist = getvpclist(profilename)
         for item in vpclist:
-                print (item.printvpc())
+                print (item.prettyprint())
         # print (str(item))
 
     if args['elasticip']:
@@ -123,38 +124,16 @@ def populateaccount(profilename):
   
     eips = ElasticIp.loaddata(profilename)
     instances = EC2.loaddata(profilename)
+
+    vpcs = Vpc.loaddata(profilename)
     
     account = Account(eips,instances)
-    
+    account.vpcs = vpcs
+      
     return account
 
 
 
-def getvpclist(profilename):
-
-    dev = boto3.session.Session(profile_name=profilename)  
-    """Get a list of all of the vpcs for a given aws account"""
-    client = boto3.client('ec2', verify=False)
-    response = client.describe_vpcs(
-    DryRun=False,
-        Filters=[
-            {
-                'Name': 'state',
-                'Values': [
-                    'available',
-                ]
-            },
-        ]
-    )
-    items = response['Vpcs']
-    vpcs = []
-    firstitem = items[0]
-    seconditem = items[1]
-    for item in items:
-        vpcobject = Vpc(item)
-        vpcs.append(vpcobject)
-
-    return vpcs
 
 
 def getec2list(profilename):

@@ -19,6 +19,11 @@ class Account:
         print ('Account Id ' + str(self.id))
 
         print ('-------------Instances---------------------------- ')
+        for vpc in self.vpcs:
+            vpc.prettyprint()
+
+
+        print ('-------------Instances---------------------------- ')
         for instance in self.instances:
             instance.prettyprint()
 
