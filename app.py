@@ -16,6 +16,7 @@ import datetime
 from elasticip import ElasticIp
 from vpc import Vpc
 from ec2 import EC2
+from account import Account
 
 
     
@@ -67,6 +68,11 @@ def main():
 
     if args['inspect']:
         print('Starting the inspection of the network')
+        account = populateaccount(profilename)
+
+        account.prettyprint()
+        
+
 
     if args['vpc']:
         vpclist = getvpclist(profilename)
@@ -113,6 +119,15 @@ def getelasticips(profilename):
         eip.prettyprint()
 
 
+def populateaccount(profilename):
+  
+    eips = ElasticIp.loaddata(profilename)
+    instances = EC2.loaddata(profilename)
+    
+    account = Account(eips,instances)
+    
+    return account
+
 
 
 def getvpclist(profilename):
@@ -144,7 +159,9 @@ def getvpclist(profilename):
 
 def getec2list(profilename):
     
-    EC2.loaddata(profilename)
+    instances = EC2.loaddata(profilename)
+    for instance in instances:
+        instance.prettyprint()
 
 def apply_template(imagelist):
     env = Environment(loader = FileSystemLoader('templates'))

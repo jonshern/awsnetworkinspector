@@ -21,8 +21,6 @@ class EC2:
         print ('Public DNS ' + str(self.PublicDnsName))
         print ('Public IP Address ' + str(self.PublicIpAddress))
 
-
-
     @staticmethod
     def loaddata(profilename):
 
@@ -46,8 +44,7 @@ class EC2:
             for subitem in item['Instances']:
                 instance = EC2(subitem)
                 instances.append(instance)
-
-                instance.prettyprint()
+        return instances                 
 
     def printeip(self):
         print ('----------------------------------')
