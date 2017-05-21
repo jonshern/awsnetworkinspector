@@ -10,19 +10,14 @@ import sys
 import argparse
 import boto3
 from jinja2 import Environment, FileSystemLoader, Template
+import datetime
 
 
 from elasticip import ElasticIp
 from vpc import Vpc
+from ec2 import EC2
 
 
-class Account:
-    name = ''
-    id = ''
-    vpcs = []
-
-    def __init__(self, **entries):
-        self.__dict__.update(entries)
     
 class InternetGateway:
     def __init__(self, **entries):
@@ -43,11 +38,6 @@ class Subnet:
 class SecurityGroup:
     def __init__(self, **entries):
         self.__dict__.update(entries)
-    
-class Ec2:    
-    SecurityGroups = []
-    def __init__(self, **entries):
-        self.__dict__.update(entries)
             
 
 
@@ -66,6 +56,9 @@ def main():
         '-v', '--vpc', help='Get a list of the vpcs', action='store_true')
     parser.add_argument(
         '-e', '--elasticip', help='Get a list of the Elasic Ips', action='store_true')
+
+    parser.add_argument(
+        '-ec', '--ec2', help='Get a list of the EC2 Instances', action='store_true')
     args = vars(parser.parse_args())
 
 
@@ -83,10 +76,33 @@ def main():
 
     if args['elasticip']:
         getelasticips(profilename)
+    
+    if args['ec2']:
+        getec2list(profilename)
+
+    
+def pp_json(json_thing, sort=True, indents=4):
+    if type(json_thing) is str:
+        print(json.dumps(json.loads(json_thing), default=json_serial, sort_keys=sort, indent=indents))
+    else:
+        print(json.dumps(json_thing, default=json_serial, sort_keys=sort, indent=indents))
+    return None
+
+
+
+def json_serial(obj):
+    """JSON serializer for objects not serializable by default json code"""
+
+    if isinstance(obj, datetime):
+        serial = obj.isoformat()
+        return serial
+    raise TypeError ("Type not serializable")
+
 
 
 def initializeaccountlist():
     accountlist = []
+
 
 
 def getelasticips(profilename):
@@ -101,8 +117,12 @@ def getelasticips(profilename):
     items = response['Addresses']
     for item in items:
         eip = ElasticIp(item)
-        eip.printeip()
+        eip.prettyprint()
         # print (item)
+
+
+
+
 
 
 def getvpclist(profilename):
@@ -130,6 +150,11 @@ def getvpclist(profilename):
         vpcs.append(vpcobject)
 
     return vpcs
+
+
+def getec2list(profilename):
+    
+    EC2.loaddata(profilename)
 
 def apply_template(imagelist):
     env = Environment(loader = FileSystemLoader('templates'))
