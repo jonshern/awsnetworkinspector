@@ -106,21 +106,11 @@ def initializeaccountlist():
 
 
 def getelasticips(profilename):
-
-    dev = boto3.session.Session(profile_name=profilename)  
-    ec2 = boto3.client('ec2')
-    filters = [
-        {'Name': 'domain', 'Values': ['vpc']}
-    ]
-    response = ec2.describe_addresses(Filters=filters)
     
-    items = response['Addresses']
-    for item in items:
-        eip = ElasticIp(item)
+    eips = ElasticIp.loaddata(profilename)
+
+    for eip in eips:
         eip.prettyprint()
-        # print (item)
-
-
 
 
 
