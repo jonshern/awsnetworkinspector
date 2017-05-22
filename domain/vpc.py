@@ -10,8 +10,6 @@ class Vpc:
     item = ''
 
 
-
-
     def __init__(self, item):
         self.item = item
 
@@ -45,7 +43,6 @@ class Vpc:
         for item in items:
             vpcobject = Vpc(item)
             vpcs.append(vpcobject)
-
 
         return vpcs
 

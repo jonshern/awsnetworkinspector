@@ -1,7 +1,7 @@
 from __future__ import print_function
 import sys
 sys.path.append('domain/')
-
+sys.path.append('helpers/')
 
 import json
 import os
@@ -17,53 +17,12 @@ from elasticip import ElasticIp
 from vpc import Vpc
 from ec2 import EC2
 from account import Account
+from subnet import Subnet
 
 
+def main(args):
     
-class InternetGateway:
-    def __init__(self, **entries):
-        self.__dict__.update(entries)
-
-class VpnGateway:
-    def __init__(self, **entries):
-        self.__dict__.update(entries)  
-
-
-
-
-
-class Subnet:
-    def __init__(self, **entries):
-        self.__dict__.update(entries)
-
-class SecurityGroup:
-    def __init__(self, **entries):
-        self.__dict__.update(entries)
-            
-
-
-
-def main():
-    
-    parser = argparse.ArgumentParser(
-        description='Inspect the network in AWS and create a report')
-
-    parser.add_argument(
-        '-p', '--profile', help='Set the Profile', default='')
-
-    parser.add_argument(
-        '-i', '--inspect', help='Initiate the inspection of the aws network', action='store_true')
-
-    parser.add_argument(
-        '-v', '--vpc', help='Get a list of the vpcs', action='store_true')
-    parser.add_argument(
-        '-e', '--elasticip', help='Get a list of the Elasic Ips', action='store_true')
-
-    parser.add_argument(
-        '-ec', '--ec2', help='Get a list of the EC2 Instances', action='store_true')
-    args = vars(parser.parse_args())
-
-
+    args = parser_args(sys.argv[1:])
 
     profilename = args['profile']
 
@@ -84,31 +43,39 @@ def main():
     if args['elasticip']:
         getelasticips(profilename)
     
+    if args['subnet']:
+        subnets = Subnet.loaddata(profilename)
+        for item in subnets:
+            item.prettyprint()
+
+    
     if args['ec2']:
         getec2list(profilename)
 
-    
-def pp_json(json_thing, sort=True, indents=4):
-    if type(json_thing) is str:
-        print(json.dumps(json.loads(json_thing), default=json_serial, sort_keys=sort, indent=indents))
-    else:
-        print(json.dumps(json_thing, default=json_serial, sort_keys=sort, indent=indents))
-    return None
+
+def parser_args(args):
+    parser = argparse.ArgumentParser(
+    description='Inspect the network in AWS and create a report')
+    parser.add_argument(
+        '-p', '--profile', help='Set the Profile', default='')
+
+    parser.add_argument(
+        '-i', '--inspect', help='Initiate the inspection of the aws network', action='store_true')
+
+    parser.add_argument(
+        '-v', '--vpc', help='Get a list of the vpcs', action='store_true')
+    parser.add_argument(
+        '-e', '--elasticip', help='Get a list of the Elasic Ips', action='store_true')
+    parser.add_argument(
+        '-s', '--subnet', help='Get a list of the subnets', action='store_true')
 
 
+    parser.add_argument(
+        '-ec', '--ec2', help='Get a list of the EC2 Instances', action='store_true')
+    args = vars(parser.parse_args())
 
-def json_serial(obj):
-    """JSON serializer for objects not serializable by default json code"""
+    return args
 
-    if isinstance(obj, datetime):
-        serial = obj.isoformat()
-        return serial
-    raise TypeError ("Type not serializable")
-
-
-
-def initializeaccountlist():
-    accountlist = []
 
 
 
@@ -129,7 +96,10 @@ def populateaccount(profilename):
     
     account = Account(eips,instances)
     account.vpcs = vpcs
-      
+
+    subnets = Subnet.loaddata(profilename)
+    account.subnets = subnets
+
     return account
 
 
@@ -159,4 +129,4 @@ def write_to_file(data_to_be_written, filename):
 
 
 if __name__ == '__main__':
-    main()
+    main(sys.argv[1:])

@@ -6,6 +6,7 @@ class Account:
     instances = []
     vpcs = []
     elasticips = []
+    subnets = []
 
     def __init__(self, elasticips, instances):
         
@@ -18,7 +19,7 @@ class Account:
         print ('------------ Account Printout  -------------------')
         print ('Account Id ' + str(self.id))
 
-        print ('-------------Instances---------------------------- ')
+        print ('-------------Vpcs---------------------------- ')
         for vpc in self.vpcs:
             vpc.prettyprint()
 
@@ -30,4 +31,7 @@ class Account:
         print ('-------------Elastic Ips---------------------------- ')
         for eip in self.elasticips:
             eip.prettyprint()
-            
+        
+        print ('-------------Subnets---------------------------- ')
+        for subnet in self.subnets:
+            subnet.prettyprint()
