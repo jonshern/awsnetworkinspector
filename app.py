@@ -24,40 +24,47 @@ def main(args):
     
     args = parser_args(sys.argv[1:])
 
-    profilename = args['profile']
 
-    if args['inspect']:
-        print('Starting the inspection of the network')
-        account = populateaccount(profilename)
+    if args['profile'] == None:
+        print('At least one profile needs to be specified')
+        exit
 
-        account.prettyprint()
+    
+    for profilename in args['profile']:
+
+
+        if args['inspect']:
+            print('Starting the inspection of the network')
+            account = populateaccount(profilename)
+
+            account.prettyprint()
+
+        if args['vpc']:
+            vpclist = getvpclist(profilename)
+            for item in vpclist:
+                    print (item.prettyprint())
+            # print (str(item))
+
+        if args['elasticip']:
+            getelasticips(profilename)
         
+        if args['subnet']:
+            subnets = Subnet.loaddata(profilename)
+            for item in subnets:
+                item.prettyprint()
 
-
-    if args['vpc']:
-        vpclist = getvpclist(profilename)
-        for item in vpclist:
-                print (item.prettyprint())
-        # print (str(item))
-
-    if args['elasticip']:
-        getelasticips(profilename)
-    
-    if args['subnet']:
-        subnets = Subnet.loaddata(profilename)
-        for item in subnets:
-            item.prettyprint()
-
-    
-    if args['ec2']:
-        getec2list(profilename)
+        
+        if args['ec2']:
+            getec2list(profilename)
 
 
 def parser_args(args):
     parser = argparse.ArgumentParser(
     description='Inspect the network in AWS and create a report')
+
+
     parser.add_argument(
-        '-p', '--profile', help='Set the Profile', default='')
+        '-p', '--profile', help='Set the Profile, this can specified many times.', action='append')
 
     parser.add_argument(
         '-i', '--inspect', help='Initiate the inspection of the aws network', action='store_true')
