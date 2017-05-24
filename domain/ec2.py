@@ -8,6 +8,7 @@ class EC2:
     PublicIp = ''
     SubnetId = ''
     PrivateIpAddress = ''
+    RawData = ''
 
     def __init__(self, item):
         self.PublicDnsName = item.get('PublicDnsName')
@@ -15,6 +16,7 @@ class EC2:
         self.PrivateIpAddress = item.get('PrivateIpAddress')
         self.SubnetId = item.get('SubnetId')
         self.PrivateIpAddress = item.get('PrivateIpAddress')
+        self.RawData = item
 
     def prettyprint(self):
         print ('----------------------------------')

@@ -11,6 +11,7 @@ import argparse
 import boto3
 from jinja2 import Environment, FileSystemLoader, Template
 import datetime
+import yaml
 
 
 from elasticip import ElasticIp
@@ -95,11 +96,13 @@ def getelasticips(profilename):
 
 
 def populateaccount(profilename):
+    
+    vpcs = Vpc.loaddata(profilename)
   
     eips = ElasticIp.loaddata(profilename)
     instances = EC2.loaddata(profilename)
 
-    vpcs = Vpc.loaddata(profilename)
+
     
     account = Account(eips,instances)
     account.vpcs = vpcs
@@ -107,10 +110,17 @@ def populateaccount(profilename):
     subnets = Subnet.loaddata(profilename)
     account.subnets = subnets
 
+    account.linksubnetstovpcs()
+
+    writetoyaml(account)
+
     return account
 
 
-
+def writetoyaml(account):
+    stream = file('data/document.yaml', 'w')
+    yaml.dump(account, stream)
+    print (yaml.dump(account)) 
 
 
 def getec2list(profilename):
@@ -119,16 +129,16 @@ def getec2list(profilename):
     for instance in instances:
         instance.prettyprint()
 
-def apply_template(imagelist):
-    env = Environment(loader = FileSystemLoader('templates'))
-    template = env.get_template('awsreport.html')
-    renderedtemplate = template.render(images=imagelist)
-    return renderedtemplate
+# def apply_template(imagelist):
+#     env = Environment(loader = FileSystemLoader('templates'))
+#     template = env.get_template('awsreport.html')
+#     renderedtemplate = template.render(images=imagelist)
+#     return renderedtemplate
 
-def write_to_file(data_to_be_written, filename):
-    f = open(filename,'w')
-    f.write(data_to_be_written)
-    f.close()
+# def write_to_file(data_to_be_written, filename):
+#     f = open(filename,'w')
+#     f.write(data_to_be_written)
+#     f.close()
 
 
 

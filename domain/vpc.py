@@ -2,6 +2,7 @@
 import boto3
 
 class Vpc:
+    # RawData = ''
     VpcId = ''
     DhcpOptionsId = ''
     CidrBlock = ''
@@ -9,14 +10,17 @@ class Vpc:
 
     item = ''
 
+    subnets = []
+
 
     def __init__(self, item):
-        self.item = item
+        # self.RawData = item
 
         self.VpcId = item.get('VpcId')
         self.DhcpOptionsId = item.get('DhcpOptionsId')
         self.CidrBlock = item.get('CidrBlock')
         self.IsDefault = item.get('IsDefault')
+        self.subnets = []
         
         
 
@@ -46,14 +50,15 @@ class Vpc:
 
         return vpcs
 
+    def prettyprint(self, character, offset):
+        print (character * offset + '--------------VPCs--------------------')
+        print (character * offset + 'Vpc Id: ' + str(self.VpcId))
+        print (character * offset + 'Cidr Block: ' + str(self.CidrBlock))
+        print (character * offset + 'IsDefault: ' + str(self.IsDefault))
         
-
-    def prettyprint(self):
-        print ('--------------VPCs--------------------')
-        print ('Vpc Id: ' + str(self.VpcId))
-        print ('Cidr Block: ' + str(self.CidrBlock))
-        print ('IsDefault: ' + str(self.IsDefault))
-
+        print (character * offset + '--------------Nested Subnets--------------------')
+        for subnet in self.subnets:
+            print(subnet.prettyprint(' ', 5 + offset))
         # print (self.item)
 
 
