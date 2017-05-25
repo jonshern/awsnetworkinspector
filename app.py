@@ -19,6 +19,7 @@ from vpc import Vpc
 from ec2 import EC2
 from account import Account
 from subnet import Subnet
+from internetgateway import InternetGateway
 
 
 def main(args):
@@ -58,6 +59,11 @@ def main(args):
         if args['ec2']:
             getec2list(profilename)
 
+        if args['test']:
+            testcommand(profilename)
+
+            
+
 
 def parser_args(args):
     parser = argparse.ArgumentParser(
@@ -77,6 +83,9 @@ def parser_args(args):
     parser.add_argument(
         '-s', '--subnet', help='Get a list of the subnets', action='store_true')
 
+    parser.add_argument(
+        '-t', '--test', help='Test a command', action='store_true')
+
 
     parser.add_argument(
         '-ec', '--ec2', help='Get a list of the EC2 Instances', action='store_true')
@@ -85,6 +94,11 @@ def parser_args(args):
     return args
 
 
+
+def testcommand(profilename):
+    ig = InternetGateway.loaddata(profilename)
+
+    
 
 
 def getelasticips(profilename):
@@ -102,8 +116,6 @@ def populateaccount(profilename):
     eips = ElasticIp.loaddata(profilename)
     instances = EC2.loaddata(profilename)
 
-
-    
     account = Account(eips,instances)
     account.vpcs = vpcs
 

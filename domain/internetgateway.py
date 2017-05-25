@@ -32,5 +32,8 @@ class InternetGateway:
             DryRun=False
         )
 
-        print (response)
+        for item in response['InternetGateways']:
+            print(item)
+
+        # print (response)
 
