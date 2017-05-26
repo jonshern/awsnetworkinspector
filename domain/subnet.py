@@ -2,7 +2,6 @@ from __future__ import print_function
 import boto3
 
 class Subnet:
-    # RawData = ''
     VpcId = ''
     AvailabilityZone = ''
     SubnetId = ''
@@ -11,17 +10,17 @@ class Subnet:
     State = ''
 
     def __init__(self, item):
-        # self.RawData = item
-        self.VpcId = item.get('VpcId')
-        self.AvailabilityZone = item.get('AvailabilityZone')
-        self.SubnetId = item.get('SubnetId')
-        self.CidrBlock = item.get('CidrBlock')
-        self.AssignIpv6AddressOnCreation = item.get('AssignIpv6AddressOnCreation')
-        self.State = item.get('State')
+        self.RawData = item
 
 
-
-
+    def hydratefromitem(self):
+        self.VpcId = self.RawData.get('VpcId')
+        self.AvailabilityZone = self.RawData.get('AvailabilityZone')
+        self.SubnetId = self.RawData.get('SubnetId')
+        self.CidrBlock = self.RawData.get('CidrBlock')
+        self.AssignIpv6AddressOnCreation = self.RawData.get('AssignIpv6AddressOnCreation')
+        self.State = self.RawData.get('State')
+        
     def prettyprint(self, character, offset):
         print (character * offset + '------------Subnet Object----------------------')
         print (character * offset + 'VpcId ' + str(self.VpcId))

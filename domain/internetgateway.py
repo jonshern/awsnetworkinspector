@@ -1,25 +1,27 @@
 from __future__ import print_function
 import boto3
+class InternetGatewayAttachment:
+    State = ''
+    VpcId = ''
 
 class InternetGateway:
-    # RawData = ''
     InternetGatewayId = ''
+    Attachments = []
+
     Name = ''
+    VpcId = ''
+
     Attachments = []
 
 
     def __init__(self, item):
-        # self.RawData = item
-        self.InternetGatewayId = item.get('InternetGatewayId')
+        self.RawData = item
 
 
 
+    def hydratefromitem(self):
+        self.InternetGatewayId = self.RawData.get('InternetGatewayId')
 
-    # def prettyprint(self, character, offset):
-    #     print (character * offset + '------------Subnet Object----------------------')
-    #     print (character * offset + 'VpcId ' + str(self.VpcId))
-    #     print (character * offset + 'SubnetId ' + str(self.SubnetId))
-    #     print (character * offset + 'CidrBlock ' + str(self.CidrBlock))
 
     @staticmethod
     def loaddata(profilename):
@@ -34,6 +36,8 @@ class InternetGateway:
 
         for item in response['InternetGateways']:
             print(item)
+
+        
 
         # print (response)
 

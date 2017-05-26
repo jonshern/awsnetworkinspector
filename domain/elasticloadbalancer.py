@@ -1,7 +1,6 @@
 import boto3
 
 class Elb:
-    # RawData = ''
     NetworkInterfaceId = ''
     AssociationId = ''
     NetworkInterfaceOwnerId = ''
@@ -11,15 +10,16 @@ class Elb:
     
 
     def __init__(self, item):
-        # self.RawData = item
-        self.NetworkInterfaceId = item.get('NetworkInterfaceId')
-        self.AssociationId = item.get('AssociationId')
-        self.NetworkInterfaceOwnerId = item.get('NetworkInterfaceOwnerId')
-        self.PublicIp = item.get('PublicIp')
-        self.AllocationId = item.get('AllocationId')
-        self.PrivateIpAddress = item.get('PrivateIpAddress')
+        self.RawData = item
 
-    
+
+    def hydratefromitem(self):
+        self.NetworkInterfaceId = self.RawData.get('NetworkInterfaceId')
+        self.AssociationId = self.RawData.get('AssociationId')
+        self.NetworkInterfaceOwnerId = self.RawData.get('NetworkInterfaceOwnerId')
+        self.PublicIp = self.RawData.get('PublicIp')
+        self.AllocationId = self.RawData.get('AllocationId')
+        self.PrivateIpAddress = self.RawData.get('PrivateIpAddress')
 
     @staticmethod
     def loaddata(profilename):

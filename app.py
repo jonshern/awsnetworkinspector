@@ -3,7 +3,7 @@ import sys
 sys.path.append('domain/')
 sys.path.append('helpers/')
 
-import json
+import pickle
 import os
 import csv
 import sys
@@ -12,6 +12,8 @@ import boto3
 from jinja2 import Environment, FileSystemLoader, Template
 import datetime
 import yaml
+from tinydb import TinyDB, Query
+
 
 
 from elasticip import ElasticIp
@@ -24,6 +26,8 @@ from internetgateway import InternetGateway
 
 def main(args):
     
+    db = TinyDB('awsinfra.json')
+    
     args = parser_args(sys.argv[1:])
 
 
@@ -31,33 +35,21 @@ def main(args):
         print('At least one profile needs to be specified')
         exit
 
+    filename = args['filename']
     
     for profilename in args['profile']:
 
-
-        if args['inspect']:
-            print('Starting the inspection of the network')
+        if args['synctodatabase']:
             account = populateaccount(profilename)
+            account.hydratefromitem()
+            serializepickle(account,filename)
 
-            account.prettyprint()
-
-        if args['vpc']:
-            vpclist = getvpclist(profilename)
-            for item in vpclist:
-                    print (item.prettyprint())
-            # print (str(item))
-
-        if args['elasticip']:
-            getelasticips(profilename)
-        
-        if args['subnet']:
-            subnets = Subnet.loaddata(profilename)
-            for item in subnets:
-                item.prettyprint()
+        if args['retrievefromdatabase']:
+            account = populateaccount(profilename)
+            account.hydratefromitem()
+            serializepickle(account,filename)
 
         
-        if args['ec2']:
-            getec2list(profilename)
 
         if args['test']:
             testcommand(profilename)
@@ -74,14 +66,17 @@ def parser_args(args):
         '-p', '--profile', help='Set the Profile, this can specified many times.', action='append')
 
     parser.add_argument(
-        '-i', '--inspect', help='Initiate the inspection of the aws network', action='store_true')
+        '-f', '--filename', help='Set filename to save database', default='awsaccount.pickle')
 
     parser.add_argument(
-        '-v', '--vpc', help='Get a list of the vpcs', action='store_true')
+        '-s', '--synctodatabase', help='Sync AWS Data to Local DB', action='store_true')
+
     parser.add_argument(
-        '-e', '--elasticip', help='Get a list of the Elasic Ips', action='store_true')
-    parser.add_argument(
-        '-s', '--subnet', help='Get a list of the subnets', action='store_true')
+        '-r', '--retrievefromdatabase', help='Retrieve AWS Data from Local DB', action='store_true')
+
+
+    # parser.add_argument(
+    #     '-r', '--retrievefromdatabase', help='Retrieve AWS Data from Local DB', action='store_true')
 
     parser.add_argument(
         '-t', '--test', help='Test a command', action='store_true')
@@ -116,7 +111,9 @@ def populateaccount(profilename):
     eips = ElasticIp.loaddata(profilename)
     instances = EC2.loaddata(profilename)
 
-    account = Account(eips,instances)
+    account = Account()
+    account.elasticips = eips
+    account.instances = instances
     account.vpcs = vpcs
 
     subnets = Subnet.loaddata(profilename)
@@ -126,7 +123,22 @@ def populateaccount(profilename):
 
     writetoyaml(account)
 
+    
+
     return account
+
+
+def serializepickle(account, filename):
+    with open(filename, 'w') as outfile:
+        pickle.dump(account, outfile)
+
+
+def deserializepickle(account, filename):
+    fileObject = open(filename,'r')  
+    account = pickle.load(fileObject)  
+
+    return account
+
 
 
 def writetoyaml(account):

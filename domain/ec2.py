@@ -8,15 +8,16 @@ class EC2:
     PublicIp = ''
     SubnetId = ''
     PrivateIpAddress = ''
-    RawData = ''
 
     def __init__(self, item):
-        self.PublicDnsName = item.get('PublicDnsName')
-        self.PublicIpAddress = item.get('PublicIpAddress')
-        self.PrivateIpAddress = item.get('PrivateIpAddress')
-        self.SubnetId = item.get('SubnetId')
-        self.PrivateIpAddress = item.get('PrivateIpAddress')
         self.RawData = item
+
+    def hydratefromitem(self):
+        self.PublicDnsName = self.RawData.get('PublicDnsName')
+        self.PublicIpAddress = self.RawData.get('PublicIpAddress')
+        self.PrivateIpAddress = self.RawData.get('PrivateIpAddress')
+        self.SubnetId = self.RawData.get('SubnetId')
+        self.PrivateIpAddress = self.RawData.get('PrivateIpAddress')
 
     def prettyprint(self):
         print ('----------------------------------')

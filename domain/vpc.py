@@ -2,27 +2,24 @@
 import boto3
 
 class Vpc:
-    # RawData = ''
     VpcId = ''
     DhcpOptionsId = ''
     CidrBlock = ''
     IsDefault = ''
-
-    item = ''
-
     subnets = []
 
 
     def __init__(self, item):
-        # self.RawData = item
+        self.RawData = item
 
-        self.VpcId = item.get('VpcId')
-        self.DhcpOptionsId = item.get('DhcpOptionsId')
-        self.CidrBlock = item.get('CidrBlock')
-        self.IsDefault = item.get('IsDefault')
+
+    def hydratefromitem(self):
+        self.VpcId = self.RawData.get('VpcId')
+        self.DhcpOptionsId = self.RawData.get('DhcpOptionsId')
+        self.CidrBlock = self.RawData.get('CidrBlock')
+        self.IsDefault = self.RawData.get('IsDefault')
         self.subnets = []
-        
-        
+
 
     @staticmethod    
     def loaddata(profilename):
