@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+
+<body>
+
+    <h2>{{ profilename }}</h2>
+    <h2>{{account.profilename }}</h2>
+    <ul>
+        {% for vpc in account.vpcs %}
+        <li>{{ vpc.VpcId }}</li>
+        {% endfor %}
+    </ul>
+
+</body>
+
+</html>

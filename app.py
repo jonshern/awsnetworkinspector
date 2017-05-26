@@ -5,16 +5,12 @@ sys.path.append('helpers/')
 
 import pickle
 import os
-import csv
 import sys
 import argparse
 import boto3
 from jinja2 import Environment, FileSystemLoader, Template
 import datetime
 import yaml
-from tinydb import TinyDB, Query
-
-
 
 from elasticip import ElasticIp
 from vpc import Vpc
@@ -26,7 +22,6 @@ from internetgateway import InternetGateway
 
 def main(args):
     
-    db = TinyDB('awsinfra.json')
     
     args = parser_args(sys.argv[1:])
 
@@ -45,11 +40,13 @@ def main(args):
             serializepickle(account,filename)
 
         if args['retrievefromdatabase']:
-            account = populateaccount(profilename)
-            account.hydratefromitem()
-            serializepickle(account,filename)
+            account = deserializepickle(filename)
 
-        
+        if args['dumphtmlprintout']:
+            account = deserializepickle(filename)
+            data = apply_template(account)
+            write_to_file(data, 'report.md')
+
 
         if args['test']:
             testcommand(profilename)
@@ -65,6 +62,8 @@ def parser_args(args):
     parser.add_argument(
         '-p', '--profile', help='Set the Profile, this can specified many times.', action='append')
 
+    
+
     parser.add_argument(
         '-f', '--filename', help='Set filename to save database', default='awsaccount.pickle')
 
@@ -74,9 +73,9 @@ def parser_args(args):
     parser.add_argument(
         '-r', '--retrievefromdatabase', help='Retrieve AWS Data from Local DB', action='store_true')
 
+    parser.add_argument(
+        '-d', '--dumphtmlprintout', help='Dump Html Report from Database', action='store_true')
 
-    # parser.add_argument(
-    #     '-r', '--retrievefromdatabase', help='Retrieve AWS Data from Local DB', action='store_true')
 
     parser.add_argument(
         '-t', '--test', help='Test a command', action='store_true')
@@ -112,6 +111,7 @@ def populateaccount(profilename):
     instances = EC2.loaddata(profilename)
 
     account = Account()
+    account.profilename = profilename
     account.elasticips = eips
     account.instances = instances
     account.vpcs = vpcs
@@ -121,7 +121,7 @@ def populateaccount(profilename):
 
     account.linksubnetstovpcs()
 
-    writetoyaml(account)
+    # writetoyaml(account)
 
     
 
@@ -133,7 +133,7 @@ def serializepickle(account, filename):
         pickle.dump(account, outfile)
 
 
-def deserializepickle(account, filename):
+def deserializepickle(filename):
     fileObject = open(filename,'r')  
     account = pickle.load(fileObject)  
 
@@ -144,7 +144,7 @@ def deserializepickle(account, filename):
 def writetoyaml(account):
     stream = file('data/document.yaml', 'w')
     yaml.dump(account, stream)
-    print (yaml.dump(account)) 
+    # print (yaml.dump(account)) 
 
 
 def getec2list(profilename):
@@ -153,16 +153,16 @@ def getec2list(profilename):
     for instance in instances:
         instance.prettyprint()
 
-# def apply_template(imagelist):
-#     env = Environment(loader = FileSystemLoader('templates'))
-#     template = env.get_template('awsreport.html')
-#     renderedtemplate = template.render(images=imagelist)
-#     return renderedtemplate
+def apply_template(accountObject):
+    env = Environment(loader = FileSystemLoader('templates'))
+    template = env.get_template('awsreport.md')
+    renderedtemplate = template.render(profilename='a profile name', account=accountObject)
+    return renderedtemplate
 
-# def write_to_file(data_to_be_written, filename):
-#     f = open(filename,'w')
-#     f.write(data_to_be_written)
-#     f.close()
+def write_to_file(data_to_be_written, filename):
+    f = open('data/' + filename,'w')
+    f.write(data_to_be_written)
+    f.close()
 
 
 
