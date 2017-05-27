@@ -18,31 +18,35 @@ from ec2 import EC2
 from account import Account
 from subnet import Subnet
 from internetgateway import InternetGateway
+from elasticloadbalancer import ElasticLoadBalancer
 
 
 def main(args):
     
-    
+    accounts = []
+
     args = parser_args(sys.argv[1:])
 
-
+    #if profile is specified use that.
+    # otherwise use a yaml file  
     if args['profile'] == None:
-        print('At least one profile needs to be specified')
-        exit
+        print ('No profile was specified, looking for a yaml file')
+    # else:
+    #     loadaccountyamlfile(args['accountyamlfilename'])
+
 
     filename = args['filename']
     
     for profilename in args['profile']:
 
-        if args['synctodatabase']:
+
+        if args['offline']:
+            account = deserializepickle(filename)
+
+        if args['createreport']:
             account = populateaccount(profilename)
             account.hydratefromitem()
             serializepickle(account,filename)
-
-        if args['retrievefromdatabase']:
-            account = deserializepickle(filename)
-
-        if args['dumphtmlprintout']:
             account = deserializepickle(filename)
             data = apply_template(account)
             write_to_file(data, 'report.md')
@@ -51,7 +55,6 @@ def main(args):
         if args['test']:
             testcommand(profilename)
 
-            
 
 
 def parser_args(args):
@@ -62,20 +65,17 @@ def parser_args(args):
     parser.add_argument(
         '-p', '--profile', help='Set the Profile, this can specified many times.', action='append')
 
-    
-
     parser.add_argument(
         '-f', '--filename', help='Set filename to save database', default='awsaccount.pickle')
 
     parser.add_argument(
-        '-s', '--synctodatabase', help='Sync AWS Data to Local DB', action='store_true')
+        '-o', '--offline', help='Retrieve AWS Data from Local DB', action='store_true')
 
     parser.add_argument(
-        '-r', '--retrievefromdatabase', help='Retrieve AWS Data from Local DB', action='store_true')
+        '-r', '--createreport', help='Create Markdown Report', action='store_true')
 
     parser.add_argument(
-        '-d', '--dumphtmlprintout', help='Dump Html Report from Database', action='store_true')
-
+        '-a', '--accountyamlfilename', help='Use markdown file for some account info', default='data/accounts.yaml')
 
     parser.add_argument(
         '-t', '--test', help='Test a command', action='store_true')
@@ -90,7 +90,7 @@ def parser_args(args):
 
 
 def testcommand(profilename):
-    ig = InternetGateway.loaddata(profilename)
+    ElasticLoadBalancer.loaddata(profilename)
 
     
 
@@ -118,6 +118,9 @@ def populateaccount(profilename):
 
     subnets = Subnet.loaddata(profilename)
     account.subnets = subnets
+
+    loadbalancers = ElasticLoadBalancer.loaddata(profilename)
+    account.elasticloadbalancers = loadbalancers
 
     account.linksubnetstovpcs()
 

@@ -25,13 +25,38 @@ Profile Name: {{account.profilename }}
   {% endfor %}
 {% endfor %}
 
+
+***
+### Elastic Ips
+{% for eip in account.elasticips %}
+* Elastic Ip: {{eip.PublicIp}}
+  * NetworkInterfaceId = {{eip.NetworkInterfaceId}}
+  * AssociationId = {{eip.AssociationId}}
+  * NetworkInterfaceOwnerId = {{eip.NetworkInterfaceOwnerId}}
+  * PublicIp = {{eip.PublicIp}}
+  * AllocationId = {{eip.AllocationId}}
+  * PrivateIpAddress = {{eip.PrivateIpAddress}}
+
+  {% endfor %}
+
+*** 
+### Elastic Load Balancers
+{% for elb in account.elasticloadbalancers %}
+* ELB: {{elb.LoadBalancerName}}
+  * PublicDnsName = {{elb.DNSName}}
+  * PublicIpAddress = {{elb.LoadBalancerArn}}
+  * PrivateIpAddress = {{elb.Scheme}}
+  * PublicIp = {{elb.IpAddressType}}
+
+ {% endfor %}
+
+
+
+
+
 ***
 ### Instances
-
-Does this show up?
 {% for instance in account.instances %}
-
-Does this show up
 * Instance: {{instance.PrivateIpAddress}}
   * PublicDnsName = {{instance.PublicDnsName}}
   * PublicIpAddress = {{instance.PublicIpAddress}}
@@ -41,3 +66,9 @@ Does this show up
   * PrivateIpAddress = {{instance.PrivateIpAddress}}
 
   {% endfor %}
+
+
+
+
+
+

@@ -7,6 +7,7 @@ class Account:
     vpcs = []
     elasticips = []
     subnets = []
+    elasticloadbalancers = []
 
     def __init__(self) :
         self.profilename = ''
@@ -16,6 +17,12 @@ class Account:
             for subnet in self.subnets:
                 if subnet.VpcId == vpc.VpcId:
                     vpc.subnets.append(subnet)
+
+            for elb in self.elasticloadbalancers:
+                if elb.VpcId == vpc.VpcId:
+                    vpc.elasticloadbalancers.append(elb)
+
+        
 
     def hydratefromitem(self):
         
@@ -29,6 +36,9 @@ class Account:
             item.hydratefromitem()
 
         for item in self.subnets:
+            item.hydratefromitem()
+
+        for item in self.elasticloadbalancers:
             item.hydratefromitem()
             
         self.linksubnetstovpcs()

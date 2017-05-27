@@ -7,6 +7,7 @@ class Vpc:
     CidrBlock = ''
     IsDefault = ''
     subnets = []
+    elasticloadbalancers = []
 
 
     def __init__(self, item):
