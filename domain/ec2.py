@@ -2,12 +2,15 @@ from __future__ import print_function
 import boto3
 
 class EC2:
+    VpcId = ''
     PublicDnsName = ''
     PublicIpAddress = ''
     PrivateIpAddress = ''
     PublicIp = ''
     SubnetId = ''
     PrivateIpAddress = ''
+    LaunchTime = ''
+    ImageId = ''
 
     def __init__(self, item):
         self.RawData = item
@@ -18,6 +21,10 @@ class EC2:
         self.PrivateIpAddress = self.RawData.get('PrivateIpAddress')
         self.SubnetId = self.RawData.get('SubnetId')
         self.PrivateIpAddress = self.RawData.get('PrivateIpAddress')
+        self.LaunchTime = self.RawData.get('LaunchTime')
+        self.VpcId = self.RawData.get('VpcId')
+        self.ImageId = self.RawData.get('ImageId')
+
 
     def prettyprint(self):
         print ('----------------------------------')
@@ -25,12 +32,12 @@ class EC2:
         print ('Public IP Address ' + str(self.PublicIpAddress))
 
     @staticmethod
-    def loaddata(profilename):
+    def loaddata(profilename, region):
 
         instances = []
 
         dev = boto3.session.Session(profile_name=profilename)  
-        client = boto3.client('ec2', verify=False)
+        client = boto3.client('ec2', verify=False, region_name=region)
         response = client.describe_instances(
             DryRun=False,
             Filters=[
@@ -53,6 +60,6 @@ class EC2:
         print ('----------------------------------')
         print ('Public IP ' + self.PublicIp)
         print ('Private IP ' + self.PrivateIpAddress)
-        
+
     def dumpjson(self):
         print (self.RawData)    

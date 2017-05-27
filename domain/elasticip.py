@@ -24,16 +24,13 @@ class ElasticIp:
     
 
     @staticmethod
-    def loaddata(profilename):
+    def loaddata(profilename, region):
         
         eips = []
 
         dev = boto3.session.Session(profile_name=profilename)  
-        ec2 = boto3.client('ec2')
-        filters = [
-            {'Name': 'domain', 'Values': ['vpc']}
-        ]
-        response = ec2.describe_addresses(Filters=filters)
+        ec2 = boto3.client('ec2', verify=False, region_name=region)
+        response = ec2.describe_addresses()
         
         items = response['Addresses']
         for item in items:

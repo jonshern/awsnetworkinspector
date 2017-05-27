@@ -23,10 +23,10 @@ class Vpc:
 
 
     @staticmethod    
-    def loaddata(profilename):
+    def loaddata(profilename, region):
         dev = boto3.session.Session(profile_name=profilename)  
         """Get a list of all of the vpcs for a given aws account"""
-        client = boto3.client('ec2', verify=False)
+        client = boto3.client('ec2', verify=False, region_name=region)
         response = client.describe_vpcs(
         DryRun=False,
             Filters=[

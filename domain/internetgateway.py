@@ -25,12 +25,12 @@ class InternetGateway:
 
 
     @staticmethod
-    def loaddata(profilename):
+    def loaddata(profilename, region):
 
         subnets = []
 
         dev = boto3.session.Session(profile_name=profilename)  
-        client = boto3.client('ec2', verify=False)
+        client = boto3.client('ec2', verify=False, region_name=region)
         response = client.describe_internet_gateways(
             DryRun=False
         )

@@ -19,6 +19,8 @@ from account import Account
 from subnet import Subnet
 from internetgateway import InternetGateway
 from elasticloadbalancer import ElasticLoadBalancer
+from inspectorconfig import AccountConfig
+from region import Region
 
 
 def main(args):
@@ -34,26 +36,31 @@ def main(args):
     # else:
     #     loadaccountyamlfile(args['accountyamlfilename'])
 
+    print(args['accountyamlfilename'])
+    config = loadinspectorpreferences(args['accountyamlfilename'])
 
     filename = args['filename']
     
     for profilename in args['profile']:
+        
+        
 
         if args['dumpjson']:
-            account = populateaccount(profilename)
+            account = populateaccount(profilename, config.configuredregions)
             account.hydratefromitem()
             serializepickle(account,filename)
             account = deserializepickle(filename)
             account.dumpjson()
+        
             
 
         if args['offline']:
             account = deserializepickle(filename)
 
         if args['createreport']:
-            account = populateaccount(profilename)
+            account = populateaccount(profilename, config.configuredregions)
             account.hydratefromitem()
-            serializepickle(account,filename)
+            serializepickle(account, filename)
             account = deserializepickle(filename)
             data = apply_template(account)
             write_to_file(data, 'report.md')
@@ -82,7 +89,7 @@ def parser_args(args):
         '-r', '--createreport', help='Create Markdown Report', action='store_true')
 
     parser.add_argument(
-        '-a', '--accountyamlfilename', help='Use markdown file for some account info', default='data/accounts.yaml')
+        '-a', '--accountyamlfilename', help='Use markdown file for some account info', default='accounts.yaml')
 
     parser.add_argument(
         '-t', '--test', help='Test a command', action='store_true')
@@ -90,8 +97,6 @@ def parser_args(args):
     parser.add_argument(
         '-d', '--dumpjson', help='Dump Json', action='store_true')
 
-    parser.add_argument(
-        '-ec', '--ec2', help='Get a list of the EC2 Instances', action='store_true')
     args = vars(parser.parse_args())
 
     return args
@@ -101,43 +106,54 @@ def parser_args(args):
 def testcommand(profilename):
     ElasticLoadBalancer.loaddata(profilename)
 
-    
 
+def loadinspectorpreferences(filename):
+    config = AccountConfig()
+    config.initializefromfile(filename)
+    return config
 
-def getelasticips(profilename):
-    
-    eips = ElasticIp.loaddata(profilename)
-
-    for eip in eips:
-        eip.prettyprint()
-
-
-def populateaccount(profilename):
-    
-    vpcs = Vpc.loaddata(profilename)
-  
-    eips = ElasticIp.loaddata(profilename)
-    instances = EC2.loaddata(profilename)
-
+def populateaccount(profilename, configuredregions):
     account = Account()
     account.profilename = profilename
-    account.elasticips = eips
-    account.instances = instances
-    account.vpcs = vpcs
 
-    subnets = Subnet.loaddata(profilename)
-    account.subnets = subnets
+    print ('Configured Regions')
+    print (configuredregions)
 
-    loadbalancers = ElasticLoadBalancer.loaddata(profilename)
-    account.elasticloadbalancers = loadbalancers
+    for region in configuredregions:
+        account.regions.append(populateregion(profilename,region['name']))
 
-    account.linksubnetstovpcs()
+    return account
+
+    
+
+def populateregion(profilename, regionname):
+    
+    region = Region(regionname)
+    region.name = regionname
+
+
+    vpcs = Vpc.loaddata(profilename, regionname)
+  
+    eips = ElasticIp.loaddata(profilename, regionname)
+    instances = EC2.loaddata(profilename, regionname)
+
+    region.elasticips = eips
+    region.instances = instances
+    region.vpcs = vpcs
+
+    subnets = Subnet.loaddata(profilename, regionname)
+    region.subnets = subnets
+
+    loadbalancers = ElasticLoadBalancer.loaddata(profilename, regionname)
+    region.elasticloadbalancers = loadbalancers
+
+    region.linksubnetstovpcs()
 
     # writetoyaml(account)
 
     
 
-    return account
+    return region
 
 
 def serializepickle(account, filename):
@@ -156,14 +172,6 @@ def deserializepickle(filename):
 def writetoyaml(account):
     stream = file('data/document.yaml', 'w')
     yaml.dump(account, stream)
-    # print (yaml.dump(account)) 
-
-
-def getec2list(profilename):
-    
-    instances = EC2.loaddata(profilename)
-    for instance in instances:
-        instance.prettyprint()
 
 def apply_template(accountObject):
     env = Environment(loader = FileSystemLoader('templates'))
@@ -175,10 +183,6 @@ def write_to_file(data_to_be_written, filename):
     f = open('data/' + filename,'w')
     f.write(data_to_be_written)
     f.close()
-
-
-
-
 
 
 if __name__ == '__main__':

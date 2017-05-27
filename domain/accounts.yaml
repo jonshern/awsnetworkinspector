@@ -1,0 +1,16 @@
+
+accounts:
+    allowedregions:
+    - name: us-east-1
+      description: Failover for us
+    - name: us-west-2
+      description: Failover for us
+    
+    configuredaccounts:
+    - profile: tgrcsandbox
+      environment: sandbox 
+      owner: tgrc
+    - profile: something
+      environment: dev
+      owner: cloud team
+    

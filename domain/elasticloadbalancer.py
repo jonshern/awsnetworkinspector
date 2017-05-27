@@ -29,7 +29,7 @@ class ElasticLoadBalancer:
     
 
     @staticmethod
-    def loaddata(profilename):
+    def loaddata(profilename, region):
         loadbalancers = []
         dev = boto3.session.Session(profile_name=profilename)
         # client = boto3.client('elb')

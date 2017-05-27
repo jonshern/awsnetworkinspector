@@ -2,12 +2,15 @@
 ## Account
 Profile Name: {{account.profilename }}
 
+{% for region in account.regions %}
+## Regions {{ region.name }}
+
 ### VPC's
-{% for vpc in account.vpcs %}
+{% for vpc in region.vpcs %}
 ***
 ### Vpc: {{ vpc.VpcId }}
   * VpcId = {{ vpc.VpcId }}
-  * CidrBlock = {{ vpc.VpcId }}
+  * CidrBlock = {{ vpc.CidrBlock }}
   * IsDefault = {{ vpc.IsDefault }}
 #### Subnets
 {% for subnet in vpc.subnets %}
@@ -22,7 +25,7 @@ Profile Name: {{account.profilename }}
 {% endfor %}
 ***
 ### Elastic Ips
-{% for eip in account.elasticips %}
+{% for eip in region.elasticips %}
 * Elastic Ip: {{eip.PublicIp}}
   * NetworkInterfaceId = {{eip.NetworkInterfaceId}}
   * AssociationId = {{eip.AssociationId}}
@@ -33,7 +36,7 @@ Profile Name: {{account.profilename }}
   {% endfor %}
 *** 
 ### Elastic Load Balancers
-{% for elb in account.elasticloadbalancers %}
+{% for elb in region.elasticloadbalancers %}
 * ELB: {{elb.LoadBalancerName}}
   * PublicDnsName = {{elb.DNSName}}
   * PublicIpAddress = {{elb.LoadBalancerArn}}
@@ -42,7 +45,7 @@ Profile Name: {{account.profilename }}
  {% endfor %}
 ***
 ### Instances
-{% for instance in account.instances %}
+{% for instance in region.instances %}
 * Instance: {{instance.PrivateIpAddress}}
   * PublicDnsName = {{instance.PublicDnsName}}
   * PublicIpAddress = {{instance.PublicIpAddress}}
@@ -50,4 +53,9 @@ Profile Name: {{account.profilename }}
   * PublicIp = {{instance.PublicIp}}
   * SubnetId = {{instance.SubnetId}}
   * PrivateIpAddress = {{instance.PrivateIpAddress}}
+  * LaunchTime = {{instance.LaunchTime}}
+  * VpcId = {{instance.VpcId}}
+  * ImageId = {{instance.ImageId}}
   {% endfor %}
+
+{% endfor %}
