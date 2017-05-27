@@ -11,9 +11,7 @@ Profile Name: {{account.profilename }}
   * IsDefault = {{ vpc.IsDefault }}
 
 #### Subnets
-
 {% for subnet in vpc.subnets %}
-
 * Subnet {{subnet.SubnetId}}
   * VpcId = {{subnet.VpcId}}
   * AvailabilityZone = {{subnet.AvailabilityZone}}
@@ -21,10 +19,8 @@ Profile Name: {{account.profilename }}
   * CidrBlock = {{subnet.CidrBlock}}
   * AssignIpv6AddressOnCreation = {{subnet.AssignIpv6AddressOnCreation}}
   * State = {{subnet.State}}
-
   {% endfor %}
 {% endfor %}
-
 
 ***
 ### Elastic Ips
@@ -36,7 +32,6 @@ Profile Name: {{account.profilename }}
   * PublicIp = {{eip.PublicIp}}
   * AllocationId = {{eip.AllocationId}}
   * PrivateIpAddress = {{eip.PrivateIpAddress}}
-
   {% endfor %}
 
 *** 
@@ -47,13 +42,7 @@ Profile Name: {{account.profilename }}
   * PublicIpAddress = {{elb.LoadBalancerArn}}
   * PrivateIpAddress = {{elb.Scheme}}
   * PublicIp = {{elb.IpAddressType}}
-
  {% endfor %}
-
-
-
-
-
 ***
 ### Instances
 {% for instance in account.instances %}
@@ -64,11 +53,4 @@ Profile Name: {{account.profilename }}
   * PublicIp = {{instance.PublicIp}}
   * SubnetId = {{instance.SubnetId}}
   * PrivateIpAddress = {{instance.PrivateIpAddress}}
-
   {% endfor %}
-
-
-
-
-
-
