@@ -39,6 +39,13 @@ def main(args):
     
     for profilename in args['profile']:
 
+        if args['dumpjson']:
+            account = populateaccount(profilename)
+            account.hydratefromitem()
+            serializepickle(account,filename)
+            account = deserializepickle(filename)
+            account.dumpjson()
+            
 
         if args['offline']:
             account = deserializepickle(filename)
@@ -80,6 +87,8 @@ def parser_args(args):
     parser.add_argument(
         '-t', '--test', help='Test a command', action='store_true')
 
+    parser.add_argument(
+        '-d', '--dumpjson', help='Dump Json', action='store_true')
 
     parser.add_argument(
         '-ec', '--ec2', help='Get a list of the EC2 Instances', action='store_true')

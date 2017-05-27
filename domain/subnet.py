@@ -43,3 +43,6 @@ class Subnet:
             subnets.append(subnet)
 
         return subnets
+
+    def dumpjson(self):
+        print (self.RawData)    

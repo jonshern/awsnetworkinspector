@@ -64,3 +64,20 @@ class Account:
         # print ('-------------Subnets---------------------------- ')
         # for subnet in self.subnets:
         #     subnet.prettyprint()
+    
+    def dumpjson(self):
+        
+        for item in self.vpcs:
+            print(item.dumpjson())
+
+        for item in self.instances:
+            print(item.dumpjson())
+
+        for item in self.elasticips:
+            print(item.dumpjson())
+
+        for item in self.subnets:
+            print(item.dumpjson())
+
+        for item in self.elasticloadbalancers:
+            print(item.dumpjson())

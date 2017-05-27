@@ -5,6 +5,7 @@ class InternetGatewayAttachment:
     VpcId = ''
 
 class InternetGateway:
+    RawData = ''
     InternetGatewayId = ''
     Attachments = []
 
@@ -40,4 +41,7 @@ class InternetGateway:
         
 
         # print (response)
+    
+    def dumpjson(self):
+        print (self.RawData)    
 

@@ -53,3 +53,6 @@ class EC2:
         print ('----------------------------------')
         print ('Public IP ' + self.PublicIp)
         print ('Private IP ' + self.PrivateIpAddress)
+        
+    def dumpjson(self):
+        print (self.RawData)    

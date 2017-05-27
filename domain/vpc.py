@@ -59,6 +59,8 @@ class Vpc:
             print(subnet.prettyprint(' ', 5 + offset))
         # print (self.item)
 
+    def dumpjson(self):
+        print (self.RawData)    
 
 
 # {u'VpcId': 'vpc-1472e072', u'InstanceTenancy': 'default', u'Tags': [{u'Value': 'tgrc-sandbox', u'Key': 'Name'}, {u'Value': 'esa', u'Key': 'BusinessUnit'}, {u'Value': '905611', u'Key': 'BillingCode'}], u'State': 'available', u'

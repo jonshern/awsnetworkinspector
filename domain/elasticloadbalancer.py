@@ -46,4 +46,8 @@ class ElasticLoadBalancer:
         print ('----------------------------------')
         # print ('Public IP ' + str(self.PublicIp))
         # print ('Private IP ' + str(self.PrivateIpAddress))
+    
+    
+    def dumpjson(self):
+        print (self.RawData)    
 

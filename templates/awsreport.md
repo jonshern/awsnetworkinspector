@@ -9,7 +9,6 @@ Profile Name: {{account.profilename }}
   * VpcId = {{ vpc.VpcId }}
   * CidrBlock = {{ vpc.VpcId }}
   * IsDefault = {{ vpc.IsDefault }}
-
 #### Subnets
 {% for subnet in vpc.subnets %}
 * Subnet {{subnet.SubnetId}}
@@ -21,7 +20,6 @@ Profile Name: {{account.profilename }}
   * State = {{subnet.State}}
   {% endfor %}
 {% endfor %}
-
 ***
 ### Elastic Ips
 {% for eip in account.elasticips %}
@@ -33,7 +31,6 @@ Profile Name: {{account.profilename }}
   * AllocationId = {{eip.AllocationId}}
   * PrivateIpAddress = {{eip.PrivateIpAddress}}
   {% endfor %}
-
 *** 
 ### Elastic Load Balancers
 {% for elb in account.elasticloadbalancers %}
